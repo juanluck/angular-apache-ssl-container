@@ -1,0 +1,34 @@
+# Imagen base
+FROM ubuntu:latest
+
+# Permite que la instalación se realice sin requerir la selección de la ubicación geográfica
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Actualiza el sistema y instala las dependencias necesarias
+RUN apt-get update && apt-get install -y \
+    php \
+    apache2 \
+    libapache2-mod-php \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y zip unzip git
+RUN apt-get install -y iputils-ping && apt install -y iproute2 
+
+# Activar SSL y crear directorio para copiar certificados
+RUN a2enmod rewrite ssl && mkdir /etc/apache2/ssl 
+
+#Copiamos un archivo con una configuración de SSL --- rutas de los certificados
+COPY ./apache-ssl.conf /etc/apache2/sites-available/apache-ssl.conf
+
+# activa el sitio default-ssl
+RUN a2ensite apache-ssl.conf
+
+# Exponer puerto 443 de Apache
+EXPOSE 443
+
+# Comando para iniciar Apache al iniciar el contenedor
+CMD apache2ctl -D FOREGROUND && tail -f /dev/null
+
+
+
+

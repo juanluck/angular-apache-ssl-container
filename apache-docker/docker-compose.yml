@@ -1,0 +1,15 @@
+#version: "3.9"
+
+services:
+  web:
+    build:
+      context: ./apache
+      dockerfile: DockerfileApache
+    image: test-apache-image:v1
+    container_name: web
+    ports:
+      - "443:443"
+    volumes:
+      - ./web_juanlu:/var/www/html/
+      - ./certificados:/etc/apache2/ssl/
+      - ./apache/apache-ssl.conf:/etc/apache2/sites-available/apache-ssl.conf
